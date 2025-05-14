@@ -1,9 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 CORS(app)
-
 
 # Base de datos simulada (en memoria)
 movies = []
@@ -50,5 +50,7 @@ def delete_movie(movie_id):
     movies = [movie for movie in movies if movie["id"] != movie_id]
     return jsonify({"mensaje": "Película eliminada exitosamente"})
 
+# Configuración para producción (Render)
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
