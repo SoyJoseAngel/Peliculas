@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Películas Favoritas</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+  <h1>🎬 Lista de Películas Favoritas</h1>
+
+  <h3>Añadir nueva película:</h3>
+  <input id="titulo" placeholder="Título">
+  <input id="director" placeholder="Director">
+  <input id="año" type="number" placeholder="Año">
+  <input id="genero" placeholder="Género">
+  <button onclick="agregarPelicula()">Añadir</button>
+
+  <h3>Películas registradas:</h3>
+  <table id="tabla-peliculas">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Director</th>
+        <th>Año</th>
+        <th>Género</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const API_URL = 'http://127.0.0.1:5000/movies';
+
+    function cargarPeliculas() {
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.querySelector('#tabla-peliculas tbody');
+          tbody.innerHTML = '';
+          data.forEach(pelicula => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+              <td>${pelicula.id}</td>
+              <td>${pelicula.titulo}</td>
+              <td>${pelicula.director}</td>
+              <td>${pelicula.año}</td>
+              <td>${pelicula.genero}</td>
+              <td>
+                <button onclick="eliminarPelicula(${pelicula.id})">Eliminar</button>
+              </td>
+            `;
+            tbody.appendChild(fila);
+          });
+        });
+    }
+
+    function agregarPelicula() {
+      const titulo = document.getElementById('titulo').value;
+      const director = document.getElementById('director').value;
+      const año = parseInt(document.getElementById('año').value);
+      const genero = document.getElementById('genero').value;
+
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titulo, director, año, genero })
+      })
+      .then(res => res.json())
+      .then(() => {
+        cargarPeliculas();
+        document.getElementById('titulo').value = '';
+        document.getElementById('director').value = '';
+        document.getElementById('año').value = '';
+        document.getElementById('genero').value = '';
+      });
+    }
+
+    function eliminarPelicula(id) {
+      fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+        .then(() => cargarPeliculas());
+    }
+
+    window.onload = cargarPeliculas;
+  </script>
+
+</body>
+</html>
