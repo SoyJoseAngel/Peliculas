@@ -1,0 +1,13 @@
+# Requeriments.txt
+
+# Dependencias principales
+flask==2.3.2
+requests==2.31.0
+
+# Dependencias adicionales
+numpy==1.25.2
+pandas==2.0.3
+
+# Dependencias de desarrollo
+pytest==7.4.0
+black==23.7.0
