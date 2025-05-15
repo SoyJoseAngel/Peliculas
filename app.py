@@ -36,7 +36,8 @@ def add_movie():
         "titulo": data.get("titulo"),
         "director": data.get("director"),
         "año": data.get("año"),
-        "genero": data.get("genero")
+        "genero": data.get("genero"),
+        "portada": data.get("portada")
     }
     result = collection.insert_one(new_movie)
     return jsonify({"mensaje": "Película agregada exitosamente", "id": str(result.inserted_id)}), 201
@@ -52,6 +53,7 @@ def update_movie(id):
             "director": data.get("director"),
             "año": data.get("año"),
             "genero": data.get("genero")
+            "portada": data.get("portada")
         }}
     )
     if result.matched_count:
