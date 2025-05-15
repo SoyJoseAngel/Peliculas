@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Conexión segura a MongoDB Atlas usando certificado raíz
+# Conexión segura a MongoDB Atlas
 client = MongoClient(
     "mongodb+srv://al21020011:mrK8BpB3bJwdXXkQ@cluster0.b9qlnhw.mongodb.net/peliculas_db?retryWrites=true&w=majority",
     tls=True,
@@ -24,7 +24,7 @@ collection = db["peliculas"]
 def get_movies():
     movies = []
     for movie in collection.find():
-        movie["_id"] = str(movie["_id"])  # Convertir ObjectId a string
+        movie["_id"] = str(movie["_id"])
         movies.append(movie)
     return jsonify(movies)
 
@@ -37,7 +37,8 @@ def add_movie():
         "director": data.get("director"),
         "año": data.get("año"),
         "genero": data.get("genero"),
-        "portada": data.get("portada", "https://via.placeholder.com/300x450?text=Sin+Portada")
+        "portada": data.get("portada", "https://via.placeholder.com/300x450?text=Sin+Portada"),
+        "descripcion": data.get("descripcion", "Sin descripción disponible")
     }
     result = collection.insert_one(new_movie)
     return jsonify({"mensaje": "Película agregada exitosamente", "id": str(result.inserted_id)}), 201
@@ -53,7 +54,8 @@ def update_movie(id):
             "director": data.get("director"),
             "año": data.get("año"),
             "genero": data.get("genero"),
-            "portada": data.get("portada", "https://via.placeholder.com/300x450?text=Sin+Portada")
+            "portada": data.get("portada", "https://via.placeholder.com/300x450?text=Sin+Portada"),
+            "descripcion": data.get("descripcion", "Sin descripción disponible")
         }}
     )
     if result.matched_count:
@@ -70,7 +72,7 @@ def delete_movie(id):
     else:
         return jsonify({"error": "Película no encontrada"}), 404
 
-# Configuración para producción (Render)
+# Configuración para producción
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
