@@ -37,7 +37,7 @@ def add_movie():
         "director": data.get("director"),
         "año": data.get("año"),
         "genero": data.get("genero"),
-        "portada": data.get("portada")
+        "portada": data.get("portada", "https://via.placeholder.com/300x450?text=Sin+Portada")
     }
     result = collection.insert_one(new_movie)
     return jsonify({"mensaje": "Película agregada exitosamente", "id": str(result.inserted_id)}), 201
@@ -53,7 +53,7 @@ def update_movie(id):
             "director": data.get("director"),
             "año": data.get("año"),
             "genero": data.get("genero"),
-            "portada": data.get("portada")
+            "portada": data.get("portada", "https://via.placeholder.com/300x450?text=Sin+Portada")
         }}
     )
     if result.matched_count:
