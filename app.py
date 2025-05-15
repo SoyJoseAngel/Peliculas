@@ -52,7 +52,7 @@ def update_movie(id):
             "titulo": data.get("titulo"),
             "director": data.get("director"),
             "año": data.get("año"),
-            "genero": data.get("genero")
+            "genero": data.get("genero"),
             "portada": data.get("portada")
         }}
     )
