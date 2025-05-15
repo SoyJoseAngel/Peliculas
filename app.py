@@ -1,56 +1,69 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 import os
 
 app = Flask(__name__)
 CORS(app)
 
-# Base de datos simulada (en memoria)
-movies = []
-next_id = 1
+# Conexión a MongoDB Atlas
+client = MongoClient("mongodb+srv://al21020011:mrK8BpB3bJwdXXkQ@cluster0.b9qlnhw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+
+# Selección de base de datos y colección
+db = client["peliculas_db"]
+collection = db["peliculas"]
 
 # Obtener todas las películas
 @app.route('/movies', methods=['GET'])
 def get_movies():
+    movies = []
+    for movie in collection.find():
+        movie["_id"] = str(movie["_id"])  # Convertir ObjectId a string
+        movies.append(movie)
     return jsonify(movies)
 
 # Añadir una película
 @app.route('/movies', methods=['POST'])
 def add_movie():
-    global next_id
     data = request.get_json()
     new_movie = {
-        "id": next_id,
         "titulo": data.get("titulo"),
         "director": data.get("director"),
         "año": data.get("año"),
         "genero": data.get("genero")
     }
-    movies.append(new_movie)
-    next_id += 1
-    return jsonify({"mensaje": "Película agregada exitosamente", "id": new_movie["id"]}), 201
+    result = collection.insert_one(new_movie)
+    return jsonify({"mensaje": "Película agregada exitosamente", "id": str(result.inserted_id)}), 201
 
 # Actualizar una película
-@app.route('/movies/<int:movie_id>', methods=['PUT'])
-def update_movie(movie_id):
+@app.route('/movies/<id>', methods=['PUT'])
+def update_movie(id):
     data = request.get_json()
-    for movie in movies:
-        if movie["id"] == movie_id:
-            movie["titulo"] = data.get("titulo", movie["titulo"])
-            movie["director"] = data.get("director", movie["director"])
-            movie["año"] = data.get("año", movie["año"])
-            movie["genero"] = data.get("genero", movie["genero"])
-            return jsonify({"mensaje": "Película actualizada exitosamente"})
-    return jsonify({"error": "Película no encontrada"}), 404
+    result = collection.update_one(
+        {"_id": ObjectId(id)},
+        {"$set": {
+            "titulo": data.get("titulo"),
+            "director": data.get("director"),
+            "año": data.get("año"),
+            "genero": data.get("genero")
+        }}
+    )
+    if result.matched_count:
+        return jsonify({"mensaje": "Película actualizada exitosamente"})
+    else:
+        return jsonify({"error": "Película no encontrada"}), 404
 
 # Eliminar una película
-@app.route('/movies/<int:movie_id>', methods=['DELETE'])
-def delete_movie(movie_id):
-    global movies
-    movies = [movie for movie in movies if movie["id"] != movie_id]
-    return jsonify({"mensaje": "Película eliminada exitosamente"})
+@app.route('/movies/<id>', methods=['DELETE'])
+def delete_movie(id):
+    result = collection.delete_one({"_id": ObjectId(id)})
+    if result.deleted_count:
+        return jsonify({"mensaje": "Película eliminada exitosamente"})
+    else:
+        return jsonify({"error": "Película no encontrada"}), 404
 
-# Configuración para producción (Render)
+# Configuración para producción (ej. Render)
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
