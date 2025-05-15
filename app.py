@@ -2,13 +2,18 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import certifi
 import os
 
 app = Flask(__name__)
 CORS(app)
 
-# Conexión a MongoDB Atlas
-client = MongoClient("mongodb+srv://al21020011:mrK8BpB3bJwdXXkQ@cluster0.b9qlnhw.mongodb.net/peliculas_db?retryWrites=true&w=majority")
+# ✅ Conexión segura a MongoDB Atlas usando certificado raíz
+client = MongoClient(
+    "mongodb+srv://al21020011:mrK8BpB3bJwdXXkQ@cluster0.b9qlnhw.mongodb.net/peliculas_db?retryWrites=true&w=majority",
+    tls=True,
+    tlsCAFile=certifi.where()
+)
 
 # Selección de base de datos y colección
 db = client["peliculas_db"]
@@ -63,7 +68,7 @@ def delete_movie(id):
     else:
         return jsonify({"error": "Película no encontrada"}), 404
 
-# Configuración para producción (ej. Render)
+# Configuración para producción (Render)
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
