@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# ✅ Conexión segura a MongoDB Atlas usando certificado raíz
+# Conexión segura a MongoDB Atlas usando certificado raíz
 client = MongoClient(
     "mongodb+srv://al21020011:mrK8BpB3bJwdXXkQ@cluster0.b9qlnhw.mongodb.net/peliculas_db?retryWrites=true&w=majority",
     tls=True,
