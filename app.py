@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import certifi
 import os
+import json
 
 # Firestore
 import firebase_admin
@@ -22,8 +23,9 @@ client = MongoClient(
 db = client["peliculas_db"]
 collection = db["peliculas"]
 
-# 🔥 Firestore (requiere firebase_key.json)
-cred = credentials.Certificate("firebase_key.json")
+# 🔥 Firebase Admin SDK desde variable de entorno
+firebase_json = json.loads(os.environ["FIREBASE_CREDENTIALS"])
+cred = credentials.Certificate(firebase_json)
 firebase_admin.initialize_app(cred)
 firestore_db = firestore.client()
 
@@ -121,7 +123,7 @@ def reservar_asientos(pelicula_id):
     return jsonify({"mensaje": "Asientos reservados con éxito", "ocupados": seleccionados})
 
 # =============================
-# INICIALIZACIÓN MANUAL (opcional)
+# INICIALIZACIÓN MANUAL
 # =============================
 
 @app.route('/asientos/<pelicula_id>/init', methods=['POST'])
@@ -133,6 +135,7 @@ def inicializar_asientos(pelicula_id):
 # =============================
 # RUN
 # =============================
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)

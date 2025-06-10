@@ -1,4 +1,4 @@
-# Requeriments.txt
+# requirements.txt
 
 # Dependencias principales
 flask==2.3.2
@@ -8,11 +8,10 @@ pymongo==4.6.1
 certifi==2023.11.17
 firebase-admin==6.4.0
 
-# Dependencias adicionales
+# Dependencias adicionales (opcional si las usas)
 numpy==1.25.2
 pandas==2.0.3
 
-# Dependencias de desarrollo
+# Dependencias de desarrollo (opcional)
 pytest==7.4.0
 black==23.7.0
-
