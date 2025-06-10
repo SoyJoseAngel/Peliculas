@@ -4,7 +4,6 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import certifi
 import os
-import json
 
 # Firestore
 import firebase_admin
@@ -23,9 +22,8 @@ client = MongoClient(
 db = client["peliculas_db"]
 collection = db["peliculas"]
 
-# 🔥 Firebase Admin SDK desde variable de entorno
-firebase_json = json.loads(os.environ["FIREBASE_CREDENTIALS"])
-cred = credentials.Certificate(firebase_json)
+# 🔥 Firestore (usando ruta segura de Render)
+cred = credentials.Certificate("/etc/secrets/firebase_key.json")
 firebase_admin.initialize_app(cred)
 firestore_db = firestore.client()
 
